@@ -1,0 +1,18 @@
+description: >
+  terraform deployment
+
+executor: terraform
+
+parameters:
+  main-dir:
+    type: string
+    default: .
+    description: >
+      Directory within to run all terraform files,
+      defaults to the working directory (.)
+
+steps:
+  - update_alpine_and_checkout
+  - run: terraform workspace new prod <<parameters.main-dir>>
+  - run: terraform init -upgrade <<parameters.main-dir>>
+  - run: terraform apply -auto-approve <<parameters.main-dir>>

@@ -1,0 +1,16 @@
+description: >
+  ansible deployment
+
+executor: ansible
+
+parameters:
+  ansible-dir:
+    type: string
+    default: .
+    description: >
+      Directory within to deploy all ansible files,
+      defaults to the working directory (.)
+
+steps:
+  - update_alpine_and_checkout
+  # TODO: ansible deployment steps

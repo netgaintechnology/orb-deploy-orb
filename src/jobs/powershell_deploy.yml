@@ -1,0 +1,16 @@
+description: >
+  powershell deployment
+
+executor: powershell
+
+parameters:
+  powershell-script:
+    type: string
+    default: .
+    description: >
+      Powershell script to run,
+      defaults to the working directory (.)
+
+steps:
+  - checkout
+  - run: powershell <<parameters.powershell-script>>

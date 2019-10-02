@@ -4,21 +4,23 @@ version: 2.1
 # release must exist; you'll need to publish manually at least once)
 # you can use scripts/publish-alpha.sh to publish a @dev:alpha release
 orbs:
-  deploy-orb: netgaintechnology/deploy-orb@dev:alpha
-  orb-tools: circleci/orb-tools@8.27.3
+  deploy-orb: netgaintechnology/deploy-orb@volatile
+  prebuild-orb: netgaintechnology/prebuild-orb@volatile
+  orb-tools: circleci/orb-tools@volatile
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
   lint-pack_validate_publish-dev:
     jobs:
-      # lint your destructured orb YAML files
-      - orb-tools/lint
+      # lint your destructured orb YAML and markdown files
+      - prebuild-orb/yaml_lint
+      - prebuild-orb/markdown_lint
 
       # pack your orb YAML files to a single orb.yml
       # validate the orb.yml file to ensure it is well-formed
       - orb-tools/pack:
           requires:
-            - orb-tools/lint
+            - prebuild-orb/yaml_lint
 
       # release dev version of orb, for testing & possible publishing
       # requires a CircleCI API token to be stored as CIRCLE_TOKEN (default)
