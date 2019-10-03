@@ -1,0 +1,16 @@
+description: >
+  python deployment
+
+executor: python
+
+parameters:
+  python-script:
+    type: string
+    default: .
+    description: >
+      Python script to run,
+      defaults to the working directory (.)
+
+steps:
+  - update_alpine_and_checkout
+  - run: python <<parameters.python-script>>

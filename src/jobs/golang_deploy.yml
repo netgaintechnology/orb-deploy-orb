@@ -1,0 +1,16 @@
+description: >
+  golang deployment
+
+executor: golang
+
+parameters:
+  golang-dir:
+    type: string
+    default: .
+    description: >
+      Directory within to lint all golang files,
+      defaults to the working directory (.)
+
+steps:
+  - update_alpine_and_checkout
+  # TODO: deployment steps
