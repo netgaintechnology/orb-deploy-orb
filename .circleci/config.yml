@@ -7,7 +7,7 @@ orbs:
   cli: circleci/circleci-cli@volatile
   prebuild-orb: netgaintechnology/prebuild-orb@volatile
   orb-tools: circleci/orb-tools@volatile
-  deploy-orb-alpha: netgaintechnology/build-orb@dev:alpha
+  deploy-orb-alpha: netgaintechnology/deploy-orb@dev:alpha
 
 commands:
   pack-validate-orb:
