@@ -102,7 +102,7 @@ workflows:
       # key in CircleCI via SSH Permissions, with github.com as Hostname)
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
-          ssh-fingerprints: 9d:71:05:ff:1f:30:b2:c4:0b:9e:27:a9:09:d8:d0:c1
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
           requires:
             - orb-tools/publish-dev
           filters:
@@ -114,7 +114,7 @@ workflows:
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-master
           cleanup-tags: true
-          ssh-fingerprints: 9d:71:05:ff:1f:30:b2:c4:0b:9e:27:a9:09:d8:d0:c1
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
           tag: master
           requires:
             - orb-tools/publish-dev
@@ -145,7 +145,7 @@ workflows:
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
           orb-name: netgaintechnology/deploy-orb
-          ssh-fingerprints: 9d:71:05:ff:1f:30:b2:c4:0b:9e:27:a9:09:d8:d0:c1
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
           cleanup-tags: true
           requires: *prod-deploy_requires
           filters:
@@ -158,7 +158,7 @@ workflows:
           name: dev-promote-minor
           release: minor
           orb-name: netgaintechnology/deploy-orb
-          ssh-fingerprints: 9d:71:05:ff:1f:30:b2:c4:0b:9e:27:a9:09:d8:d0:c1
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
           cleanup-tags: true
           requires: *prod-deploy_requires
           filters:
@@ -171,7 +171,7 @@ workflows:
           name: dev-promote-major
           release: major
           orb-name: netgaintechnology/deploy-orb
-          ssh-fingerprints: 9d:71:05:ff:1f:30:b2:c4:0b:9e:27:a9:09:d8:d0:c1
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
           cleanup-tags: true
           requires: *prod-deploy_requires
           filters:
