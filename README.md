@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/netgaintechnology/orb-deploy-orb.svg?style=svg)](https://circleci.com/gh/netgaintechnology/orb-deploy-orb) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
 
-An orb managing the deployment phase jobs.
+An  orb managing the deployment phase jobs.
 
 ## Usage
 
