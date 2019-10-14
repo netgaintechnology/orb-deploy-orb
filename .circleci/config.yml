@@ -4,9 +4,73 @@ version: 2.1
 # release must exist; you'll need to publish manually at least once)
 # you can use scripts/publish-alpha.sh to publish a @dev:alpha release
 orbs:
-  deploy-orb: netgaintechnology/deploy-orb@volatile
+  cli: circleci/circleci-cli@volatile
   prebuild-orb: netgaintechnology/prebuild-orb@volatile
   orb-tools: circleci/orb-tools@volatile
+  deploy-orb-alpha: netgaintechnology/deploy-orb@dev:alpha
+
+commands:
+  pack-validate-orb:
+    description: |
+      publish dev version of orb based on branch.
+    steps:
+      - checkout
+      - cli/install
+      - orb-tools/install-bats
+      - orb-tools/pack
+      - orb-tools/validate
+      - orb-tools/check-env-var-param:
+          command-name: Test `check-env-var-param` command with built-in env vars
+          param: CIRCLE_BUILD_NUM,CIRCLE_BRANCH,CIRCLE_BUILD_URL,CIRCLE_JOB
+
+jobs:
+  test-dev:
+    parameters:
+      executor:
+        type: executor
+
+    executor: <<parameters.executor>>
+
+    steps:
+      - pack-validate-orb
+      - orb-tools/publish:
+          orb-ref: netgaintechnology/deploy-orb@dev:$CIRCLE_TAG
+
+  test-master:
+    parameters:
+      executor:
+        type: executor
+      segment:
+        description: >
+          The semver segment to increment 'major' or 'minor' or 'patch'
+        type: enum
+        enum: [major, minor, patch]
+        default: patch
+
+    executor: <<parameters.executor>>
+
+    steps:
+      - pack-validate-orb
+      - orb-tools/increment:
+          orb-ref: netgaintechnology/deploy-orb
+          segment: <<parameters.segment>>
+
+# yaml anchor filters
+integration-dev_filters: &integration-dev_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /integration-.*/
+integration-master_filters: &integration-master_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /master-.*/
+
+prod-deploy_requires: &prod-deploy_requires
+  [
+    alpine-master
+  ]
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
@@ -60,66 +124,58 @@ workflows:
 
   # this `integration-tests_prod-release` workflow will ignore commits
   # it is only triggered by git tags, which are created in the job above
-  # integration-tests_prod-release:
-  #   jobs:
-  #     # - your integration test jobs go here
-  #     # - you will want to call each integration testing job twice,
-  #     # - each under a different name:
-  #     # - once, for integration tests triggered by non-master-branch commits
-  #     # - and again, for tests triggered by commits to master
-  #     # - only commits to master should potentially trigger a prod release
+  integration-tests_prod-release:
+    jobs:
+      # triggered by non-master branch commits
+      # test commands with executors
+      # alpine
+      - test-dev:
+          name: alpine-dev
+          executor: orb-tools/alpine
+          filters: *integration-dev_filters
 
-  #     # patch, minor, or major publishing
-  #     - orb-tools/dev-promote-prod:
-  #         name: dev-promote-patch
-  #         orb-name: circleci/orb-tools
-  #         ssh-fingerprints: # your SSH key fingerprint
-  #         cleanup-tags: true
-  #         requires:
-  #           # - your integration testing jobs go here
-  #         filters:
-  #           branches:
-  #             ignore: /.*/
-  #           tags:
-  #             only: /master-patch.*/
+      # triggered by master branch commits
+      # alpine
+      - test-master:
+          name: alpine-master
+          executor: orb-tools/alpine
+          filters: *integration-master_filters
 
-  #     - orb-tools/dev-promote-prod:
-  #         name: dev-promote-minor
-  #         release: minor
-  #         orb-name: circleci/orb-tools
-  #         ssh-fingerprints: # your SSH key fingerprint
-  #         cleanup-tags: true
-  #         requires:
-  #           # - your integration testing jobs go here
-  #         filters:
-  #           branches:
-  #             ignore: /.*/
-  #           tags:
-  #             only: /master-minor.*/
+      # patch, minor, or major publishing
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-patch
+          orb-name: netgaintechnology/deploy-orb
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
+          cleanup-tags: true
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-patch.*/
 
-  #     - orb-tools/dev-promote-prod:
-  #         name: dev-promote-major
-  #         release: major
-  #         orb-name: circleci/orb-tools
-  #         ssh-fingerprints: # your SSH key fingerprint
-  #         cleanup-tags: true
-  #         requires:
-  #           # - your integration testing jobs go here
-  #         filters:
-  #           branches:
-  #             ignore: /.*/
-  #           tags:
-  #             only: /master-major.*/
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-minor
+          release: minor
+          orb-name: netgaintechnology/deploy-orb
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
+          cleanup-tags: true
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-minor.*/
 
-# yaml anchor filters
-integration-dev_filters: &integration-dev_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /integration-.*/
-
-integration-master_filters: &integration-master_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /master-.*/
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-major
+          release: major
+          orb-name: netgaintechnology/deploy-orb
+          ssh-fingerprints: d0:62:d6:03:0d:e0:43:4a:a2:4e:b5:59:d4:9f:00:a0
+          cleanup-tags: true
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-major.*/

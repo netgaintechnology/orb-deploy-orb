@@ -1,0 +1,35 @@
+description: |
+  chef chef_server deployment
+
+executor: chef
+
+steps:
+  - checkout
+  - run: mkdir -p .chef
+  - run: echo $CHEF_DELIVERY_KEY > .chef/delivery.pem
+  - run: |
+      cat \<<~EOF
+        current_dir = File.dirname(__FILE__)
+        user = 'delivery'
+        org = 'netgain'
+        node_name                user
+        client_key               "#{current_dir}/#{user}.pem"
+        chef_server_url          "https://chef-server.onnetgain.com/organizations/#{org}"
+        cookbook_path            ["#{current_dir}/../cookbooks"]
+        ssl_ca_file              File.join(current_dir, 'ca_certs', '')
+        trusted_certs_dir        File.join(current_dir, 'trusted_certs')
+        knife[:chef_license] = 'accept'
+        knife[:supermarket_site] = 'https://chef-supermarket.onnetgain.com'
+        knife[:identity_file] = "#{current_dir}/root.key"
+        knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
+      EOF
+  - run: berks install
+  - run: berks upload
+  - run: find ./roles/ -name "*.json" -exec knife role from file \\{\\} \\;
+  - run: |
+      for d in ./data_bags/
+      do
+        (knife data bag from file ./data_bags/"$d" –all)
+      done
+  - run: berks apply test
+  - run: berks apply prod
