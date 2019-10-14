@@ -50,6 +50,7 @@ jobs:
     executor: <<parameters.executor>>
 
     steps:
+      - pack-validate-orb
       - orb-tools/increment:
           orb-ref: netgaintechnology/deploy-orb
           segment: <<parameters.segment>>
