@@ -2,7 +2,7 @@
 
 ## 0.0.2 (2019-10-11)
 
-- [corey.hemminger] - adding in auto publishing
+- [corey.hemminger] - adding in auto publishing and updating chef deployments
 
 ## 0.0.1 (2019-10-02)
 
