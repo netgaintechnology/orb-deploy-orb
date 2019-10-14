@@ -5,9 +5,10 @@ executor: chef
 
 steps:
   - checkout
-  - run: mkdir -p .chef
-  - run: echo $CHEF_SUPERMARKET_KEY > ./.chef/chef-supermarket.pem
-  - run: stove --endpoint https://chef-supermarket.onnetgain.com --username chef-supermarket --key ./.chef/chef-supermarket.pem
+  - run: mkdir -p ~/.chef
+  - run: echo $CHEF_SUPERMARKET_KEY > ~/.chef/chef-supermarket.pem
+  - run: echo "{"username":"chef-supermarket","key":"/root/.chef/chef-supermarket.pem"}' > ~/.stove
+  - run: stove --no-ssl-verify --no-git --endpoint https://chef-supermarket.onnetgain.com --username chef-supermarket --key ~/.chef/chef-supermarket.pem
   - run: mkdir -p ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
   - run: rsync -au ./* ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
-  - run: knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -o ./cookbook -u chef-supermarket -k ./chef-supermarket.pem
+  - run: knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -o ./cookbook -u chef-supermarket -k ~/chef-supermarket.pem

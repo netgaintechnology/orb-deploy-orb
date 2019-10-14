@@ -5,10 +5,10 @@ executor: chef
 
 steps:
   - checkout
-  - run: mkdir -p .chef
-  - run: echo $CHEF_DELIVERY_KEY > .chef/delivery.pem
+  - run: mkdir -p ~/.chef
+  - run: echo $CHEF_DELIVERY_KEY > ~/.chef/delivery.pem
   - run: |
-      cat \<<~EOF
+      cat \<<~EOF > ~/.chef/config.rb
         current_dir = File.dirname(__FILE__)
         user = 'delivery'
         org = 'netgain'
@@ -20,7 +20,6 @@ steps:
         trusted_certs_dir        File.join(current_dir, 'trusted_certs')
         knife[:chef_license] = 'accept'
         knife[:supermarket_site] = 'https://chef-supermarket.onnetgain.com'
-        knife[:identity_file] = "#{current_dir}/root.key"
         knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
       EOF
   - run: berks install
