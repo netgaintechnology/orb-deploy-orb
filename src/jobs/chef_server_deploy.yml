@@ -36,11 +36,8 @@ steps:
         client_key               "#{current_dir}/#{user}.pem"
         chef_server_url          "<<parameters.chef-server-url>>/organizations/#{org}"
         cookbook_path            ["/root"]
-        ssl_ca_file              File.join(current_dir, 'ca_certs', '')
-        trusted_certs_dir        File.join(current_dir, 'trusted_certs')
         knife[:chef_license] = 'accept'
         knife[:supermarket_site] = '<<parameters.chef-supermarket-url>>'
-        knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
   - run: berks install
   - run: berks upload
   - run: find ./roles/ -name "*.json" -exec knife role from file \\{\\} \\;
