@@ -6,7 +6,7 @@ executor: chef
 steps:
   - checkout
   - run: mkdir -p /root/.chef
-  - run: echo $CHEF_DELIVERY_KEY > /root/.chef/delivery.pem
+  - run: echo $CHEF_DELIVERY_KEY | base64 --decode > /root/.chef/delivery.pem
   - run: |
       cat \<<~EOF > /root/.chef/config.rb
         current_dir = File.dirname(__FILE__)
@@ -15,7 +15,7 @@ steps:
         node_name                user
         client_key               "#{current_dir}/#{user}.pem"
         chef_server_url          "https://chef-server.onnetgain.com/organizations/#{org}"
-        cookbook_path            ["#{current_dir}/../cookbooks"]
+        cookbook_path            ["/root"]
         ssl_ca_file              File.join(current_dir, 'ca_certs', '')
         trusted_certs_dir        File.join(current_dir, 'trusted_certs')
         knife[:chef_license] = 'accept'
