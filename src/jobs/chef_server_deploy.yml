@@ -20,8 +20,7 @@ steps:
         trusted_certs_dir        File.join(current_dir, 'trusted_certs')
         knife[:chef_license] = 'accept'
         knife[:supermarket_site] = 'https://chef-supermarket.onnetgain.com'
-        knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
-      EOF
+        # knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
   - run: berks install
   - run: berks upload
   - run: find ./roles/ -name "*.json" -exec knife role from file \\{\\} \\;
