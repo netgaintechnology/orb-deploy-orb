@@ -1,26 +1,46 @@
-description: >
+description: |
   chef cookbook deployment
 
 executor: chef
 
+parameters:
+  chef-server-url:
+    type: string
+    default: https://api.chef.io/
+    description: |
+      URL for the chef server.
+  chef-server-organization:
+    type: string
+    description: |
+      Chef Server organization name
+  chef-supermarket-url:
+    type: string
+    default: https://supermarket.chef.io/
+    description: |
+      URL for supermarket to deploy cookbooks to.
+  chef-supermarket-user:
+    type: string
+    description: |
+      Supermarket username to publish cookbooks under.
+
 steps:
   - checkout
   - run: mkdir -p /root/.chef
-  - run: echo $CHEF_SUPERMARKET_KEY | base64 --decode > /root/.chef/chef-supermarket.pem
+  - run: echo $CHEF_SUPERMARKET_KEY | base64 --decode > /root/.chef/<<parameters.chef-supermarket-user>>.pem
   - run: |
       cat \<<~EOF > /root/.chef/config.rb
         current_dir = File.dirname(__FILE__)
-        user = 'chef-supermarket'
-        org = 'netgain'
+        user = '<<parameters.chef-supermarket-user>>'
+        org = '<<parameters.chef-server-organization>>'
         node_name                user
         client_key               "#{current_dir}/#{user}.pem"
-        chef_server_url          "https://chef-server.onnetgain.com/organizations/#{org}"
+        chef_server_url          "<<parameters.chef-server-url>>/organizations/#{org}"
         cookbook_path            ["/root"]
         ssl_ca_file              File.join(current_dir, 'ca_certs', '')
         trusted_certs_dir        File.join(current_dir, 'trusted_certs')
         knife[:chef_license] = 'accept'
-        knife[:supermarket_site] = 'https://chef-supermarket.onnetgain.com'
-        # knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
+        knife[:supermarket_site] = '<<parameters.chef-supermarket-url>>'
+        knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
   #- run: mkdir -p ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
   #- run: rsync -au ./* ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
   - run: pwd && echo && cat /root/.chef/chef-supermarket.pem && echo && ls -alh
