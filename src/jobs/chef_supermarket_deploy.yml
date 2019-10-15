@@ -7,7 +7,23 @@ steps:
   - checkout
   - run: mkdir -p /root/.chef
   - run: echo $CHEF_SUPERMARKET_KEY > /root/.chef/chef-supermarket.pem
+  - run: |
+      cat \<<~EOF > /root/.chef/config.rb
+        current_dir = File.dirname(__FILE__)
+        user = 'chef-supermarket'
+        org = 'netgain'
+        node_name                user
+        client_key               "#{current_dir}/#{user}.pem"
+        chef_server_url          "https://chef-server.onnetgain.com/organizations/#{org}"
+        cookbook_path            ["#{current_dir}/../cookbooks"]
+        ssl_ca_file              File.join(current_dir, 'ca_certs', '')
+        trusted_certs_dir        File.join(current_dir, 'trusted_certs')
+        knife[:chef_license] = 'accept'
+        knife[:supermarket_site] = 'https://chef-supermarket.onnetgain.com'
+        knife[:secret_file] = "#{current_dir}/encrypted_data_bag_secret"
+      EOF
   - run: mkdir -p ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
   - run: rsync -au ./* ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
+  - run: pwd && echo && cat /root/.chef/chef-supermarket.pem
   - run: knife ssl check https://chef-supermarket.onnetgain.com
   - run: knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -o ./cookbook --supermarket-site https://chef-supermarket.onnetgain.com -u chef-supermarket -k /root/.chef/chef-supermarket.pem
