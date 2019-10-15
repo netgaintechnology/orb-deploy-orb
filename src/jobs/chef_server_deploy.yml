@@ -30,7 +30,7 @@ steps:
   - run: |
       cat \<<~EOF > /root/.chef/config.rb
         current_dir = File.dirname(__FILE__)
-        user = '<<parameters.chef-supermarket-user>>'
+        user = '<<parameters.chef-server-user>>'
         org = '<<parameters.chef-server-organization>>'
         node_name                user
         client_key               "#{current_dir}/#{user}.pem"
