@@ -9,4 +9,5 @@ steps:
   - run: echo $CHEF_SUPERMARKET_KEY > /root/.chef/chef-supermarket.pem
   - run: mkdir -p ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
   - run: rsync -au ./* ./cookbook/$(grep -oP "(?<=name ')[^' ]+" ./metadata.rb)
+  - run: knife ssl fetch https://chef-supermarket.onnetgain.com
   - run: knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -o ./cookbook --supermarket-site https://chef-supermarket.onnetgain.com -u chef-supermarket -k /root/.chef/chef-supermarket.pem
