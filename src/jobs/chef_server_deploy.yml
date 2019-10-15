@@ -17,11 +17,11 @@ parameters:
     type: string
     description: |
       Chef server username to upload chef objects.
-  chef-supermarket-url:
-    type: string
-    default: https://supermarket.chef.io/
-    description: |
-      URL for supermarket to deploy cookbooks to.
+#  chef-supermarket-url:
+#    type: string
+#    default: https://supermarket.chef.io/
+#    description: |
+#      URL for supermarket to deploy cookbooks to.
 
 steps:
   - checkout
@@ -35,9 +35,9 @@ steps:
         node_name                user
         client_key               "#{current_dir}/#{user}.pem"
         chef_server_url          "<<parameters.chef-server-url>>/organizations/#{org}"
-        cookbook_path            ["/root"]
-        knife[:chef_license] = 'accept'
-        knife[:supermarket_site] = '<<parameters.chef-supermarket-url>>'
+#        cookbook_path            ["/root"]
+#        knife[:chef_license] = 'accept'
+#        knife[:supermarket_site] = '<<parameters.chef-supermarket-url>>'
   - run: berks install
   - run: berks upload
   - run: find ./roles/ -name "*.json" -exec knife role from file \\{\\} \\;
