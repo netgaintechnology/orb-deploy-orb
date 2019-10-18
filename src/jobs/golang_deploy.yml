@@ -1,4 +1,4 @@
-description: >
+description: |
   golang deployment
 
 executor: golang
@@ -7,7 +7,7 @@ parameters:
   golang-dir:
     type: string
     default: .
-    description: >
+    description: |
       Directory within to lint all golang files,
       defaults to the working directory (.)
 

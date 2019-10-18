@@ -1,4 +1,4 @@
-description: >
+description: |
   ansible deployment
 
 executor: ansible
@@ -7,7 +7,7 @@ parameters:
   ansible-dir:
     type: string
     default: .
-    description: >
+    description: |
       Directory within to deploy all ansible files,
       defaults to the working directory (.)
 

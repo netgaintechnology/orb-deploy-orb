@@ -1,4 +1,4 @@
-description: >
+description: |
   terraform deployment
 
 executor: terraform
@@ -7,12 +7,17 @@ parameters:
   main-dir:
     type: string
     default: .
-    description: >
+    description: |
       Directory within to run all terraform files,
       defaults to the working directory (.)
 
 steps:
   - update_alpine_and_checkout
-  - run: terraform workspace new prod <<parameters.main-dir>>
+  - run: |
+      cat <<~EOF > ~/.terraformrc
+        # Terraform CLI config
+        credentials "app.terraform.io" {
+          token = "$TFIO_TOKEN"
+        }
   - run: terraform init -upgrade <<parameters.main-dir>>
-  - run: terraform apply -auto-approve <<parameters.main-dir>>
+  - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>

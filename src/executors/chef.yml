@@ -1,4 +1,4 @@
-description: >
+description: |
   Docker image for chef-workstation
 
 resource_class: medium
