@@ -32,11 +32,7 @@ steps:
         chef_server_url          "<<parameters.chef-server-url>>/organizations/#{org}"
   - run: berks install
   - run: berks upload
-  - run: find ./roles/ -name "*.json" -exec knife role from file \{\} \;
-  - run: |
-      for d in ./data_bags/
-      do
-        (knife data bag from file ./data_bags/"$d" –all)
-      done
+  - run: find ./roles/ -name "*.json" -exec 'knife role from file \{\} &' \;
+  - run: find ./data_bags/ -name "*.json" -exec 'knife data bag from file "$(basename "$(dirname "\{\}}")")" \{\} &' \;
   - run: berks apply test
   - run: berks apply prod
