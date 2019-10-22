@@ -45,7 +45,8 @@ steps:
         if [ ! $( knife data bag list | grep $bag ) ]; then
           knife data bag create $bag
         fi
-        knife data bag from file $bag $item
+        knife data bag from file $bag $item &
       done
+      wait
   - run: berks apply test
   - run: berks apply prod
