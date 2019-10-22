@@ -32,6 +32,7 @@ steps:
         chef_server_url          "<<parameters.chef-server-url>>/organizations/#{org}"
   - run: berks install
   - run: berks upload
-  - run: for role in roles/*.json; do knife role from file $role & done; wait
-  - run: for dbag in data_bags/*/*.json; do bag=$( echo $dbag | cut -f2 -d/ ); item=$( echo $dbag | cut -f3 -d/ ); if [ ! $( knife data bag list | grep $bag ) ]; then knife data bag create $bag; fi; knife data bag from file $bag $item & done; waits apply test
+  - run: for role in ./roles/*.json; do knife role from file $role & done; wait
+  - run: for dbag in ./data_bags/*/*.json; do bag=$( echo $dbag | cut -f3 -d/ ); item=$( echo $dbag | cut -f4 -d/ ); if [ ! $( knife data bag list | grep $bag ) ]; then knife data bag create $bag; fi; knife data bag from file $bag $item & done; wait
+  - run: berks apply test
   - run: berks apply prod
