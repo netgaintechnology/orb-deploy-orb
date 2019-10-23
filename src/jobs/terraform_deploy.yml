@@ -10,6 +10,11 @@ parameters:
     description: |
       Directory within to run all terraform files,
       defaults to the working directory (.)
+  tf-workspace:
+    type: string
+    default: prod
+    description: |
+      Terraform workspace to use
 
 steps:
   - update_alpine_and_checkout
@@ -19,6 +24,6 @@ steps:
         credentials "app.terraform.io" {
           token = "$TFIO_TOKEN"
         }
-  - run: terraform workspace new prod
+  - run: terraform workspace new <<parameters.tf-workspace>>
   - run: terraform init -upgrade <<parameters.main-dir>>
   - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>
