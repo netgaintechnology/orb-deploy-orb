@@ -5,6 +5,26 @@ executor: packer
 
 steps:
   - update_alpine_and_checkout
+
+  # Add Github creds for private repo use, conditional on env vars being present
+  - when:
+      condition: $GITHUB_USER
+      steps:
+        - run:
+            name: Set Github User
+            command: |
+              echo "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" > ~/.git-credentials
+  - when:
+      condition: $GITHUB_USER
+      steps:
+        - run:
+            name: Set Github Cred Helper
+            command: |
+              echo "[user]"  > ~/.gitconfig
+              echo "  name = $GITHUB_USER" >> ~/.gitconfig
+              echo "[credential]" >> ~/.gitconfig
+              echo "  helper = store" >> ~/.gitconfig
+
   - run:
       name: Update system packages
       command: |
