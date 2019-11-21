@@ -1,5 +1,5 @@
 description: |
-  Packer config file validation
+  Build container with resources needed to deploy packer image.
 
 executor: packer
 
