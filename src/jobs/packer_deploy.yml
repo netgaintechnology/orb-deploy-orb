@@ -3,6 +3,13 @@ description: |
 
 executor: packer
 
+parameters:
+  ansible_repo:
+    type: string
+    default: ""
+    description: |
+      HTTPS/SSH URL of your Ansible repo, which should contain your playbooks, roles, etc.
+
 steps:
   - update_alpine_and_checkout
 
@@ -24,6 +31,16 @@ steps:
               echo "  name = $GITHUB_USER" >> ~/.gitconfig
               echo "[credential]" >> ~/.gitconfig
               echo "  helper = store" >> ~/.gitconfig
+
+  # Checkout an Ansible repo, conditional on env vars being present
+  - when:
+      condition: <<parameters.ansible_repo>>
+      steps:
+        - run:
+            name: Clone Ansible Repo into ansible directory
+            command: |
+              mkdir ansible
+              git clone <<parameters.ansible_repo>> ansible
 
   - run:
       name: Update system packages
