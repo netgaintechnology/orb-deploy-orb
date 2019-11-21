@@ -1,0 +1,46 @@
+description: |
+  Packer config file validation
+
+executor: packer
+
+working_directory: /git/packer
+
+steps:
+  - update_alpine_and_checkout
+  - run:
+      name: Update system packages
+      command: |
+        apk add --update git bash openssl curl openssh-client python py-boto py-dateutil py-httplib2 py-jinja2 py-paramiko py-pip py-setuptools py-yaml tar unzip
+  - run:
+      name: Download and Install Packer
+      command: |
+        wget https://releases.hashicorp.com/packer/1.4.5/packer_1.4.5_linux_amd64.zip
+        unzip packer_1.4.5_linux_amd64.zip -d /bin
+        ls -lah /bin/packer
+  - run:
+      name: Download Packer Windows Update Provisioner
+      command: |
+        wget https://github.com/rgl/packer-provisioner-windows-update/releases/download/v0.7.1/packer-provisioner-windows-update-linux.tgz
+        ls -lah packer-provisioner-windows-update-linux.tgz
+        tar -xvzf packer-provisioner-windows-update-linux.tgz --no-same-owner -C /bin
+        chmod 755 /bin/packer-provisioner-windows-update
+        ls -lah /bin/packer-provisioner-windows-update
+  - run:
+      name: Download and Install Ansible
+      command: apk add --update ansible
+  - run:
+      name: Download and Install PyWinRM
+      command: pip3 install pywinrm
+  - run:
+      name: PyWinRM version check
+      command: pip3 show pywinrm
+  - run:
+      name: Packer version check
+      command: packer --version
+  - run:
+      name: Ansible version check
+      command: ansible --version
+  - run:
+      name: Build Packer Image
+      command: packer build /git/packer/config.json
+      no_output_timeout: 120m
