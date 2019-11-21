@@ -3,8 +3,6 @@ description: |
 
 executor: packer
 
-working_directory: /git/packer
-
 steps:
   - update_alpine_and_checkout
   - run:
@@ -42,5 +40,5 @@ steps:
       command: ansible --version
   - run:
       name: Build Packer Image
-      command: packer build /git/packer/config.json
+      command: packer build config.json
       no_output_timeout: 120m
