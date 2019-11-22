@@ -71,9 +71,16 @@ steps:
   - run:
       command: ansible --version
   - run:
+      name: Set current time
+      command: |
+        CURRENT_TIME=`date '+%F_%H:%M:%S'`
+        echo "{"ami_name":"" "$CIRCLE_PROJECT_REPONAME.$CIRCLE_BRANCH.$CURRENT_TIME"}"  > ~/vars.json
+  - run:
       name: Validate Packer config.json
-      command: packer validate config.json -var 'ami_name=$CIRCLE_PROJECT_REPONAME.$CIRCLE_BRANCH.$CURRENT_TIME'
+      command: |
+        packer validate -var-file ~/vars.json config.json
   - run:
       name: Build AMI
-      command: packer validate config.json -var 'ami_name=$CIRCLE_PROJECT_REPONAME.$CIRCLE_BRANCH.$CURRENT_TIME'
+      command: |
+        packer build -var-file ~/vars.json config.json
       no_output_timeout: 120m
