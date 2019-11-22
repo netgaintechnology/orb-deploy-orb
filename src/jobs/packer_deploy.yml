@@ -45,7 +45,7 @@ steps:
   - run:
       name: Update system packages
       command: |
-        apk add --update git bash openssl curl openssh-client python py-boto py-dateutil py-httplib2 py-jinja2 py-paramiko py-pip py-setuptools py-yaml tar unzip
+        apk add --update openssl openssh-client python py-boto py-dateutil py-httplib2 py-jinja2 py-paramiko py-pip py-setuptools py-yaml
   - run:
       name: Download and Install Packer
       command: |
@@ -61,19 +61,14 @@ steps:
         chmod 755 /bin/packer-provisioner-windows-update
         ls -lah /bin/packer-provisioner-windows-update
   - run:
-      name: Download and Install Ansible
       command: apk add --update ansible
   - run:
-      name: Download and Install PyWinRM
       command: pip3 install pywinrm
   - run:
-      name: PyWinRM version check
       command: pip3 show pywinrm
   - run:
-      name: Packer version check
       command: packer --version
   - run:
-      name: Ansible version check
       command: ansible --version
   - run:
       name: Build Packer Image
