@@ -1,0 +1,76 @@
+description: |
+  Build container with resources needed to deploy packer image.
+
+executor: packer
+
+parameters:
+  ansible_repo:
+    type: string
+    default: ""
+    description: |
+      HTTPS/SSH URL of your Ansible repo, which should contain your playbooks, roles, etc.
+
+steps:
+  - update_alpine_and_checkout
+
+  # Add Github creds for private repo use, conditional on env vars being present
+  - when:
+      condition: $GITHUB_USER
+      steps:
+        - run:
+            name: Set Github User
+            command: |
+              echo "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" > ~/.git-credentials
+  - when:
+      condition: $GITHUB_USER
+      steps:
+        - run:
+            name: Set Github Cred Helper
+            command: |
+              echo "[user]"  > ~/.gitconfig
+              echo "  name = $GITHUB_USER" >> ~/.gitconfig
+              echo "[credential]" >> ~/.gitconfig
+              echo "  helper = store" >> ~/.gitconfig
+
+  # Checkout an Ansible repo, conditional on env vars being present
+  - when:
+      condition: <<parameters.ansible_repo>>
+      steps:
+        - run:
+            name: Clone Ansible Repo into ansible directory
+            command: |
+              mkdir ansible
+              git clone <<parameters.ansible_repo>> ansible
+
+  - run:
+      name: Update system packages
+      command: |
+        apk add --update openssl openssh-client python py-boto py-dateutil py-httplib2 py-jinja2 py-paramiko py-pip py-setuptools py-yaml
+  - run:
+      name: Download and Install Packer
+      command: |
+        wget https://releases.hashicorp.com/packer/1.4.5/packer_1.4.5_linux_amd64.zip
+        unzip packer_1.4.5_linux_amd64.zip -d /bin
+        ls -lah /bin/packer
+  - run:
+      name: Download Packer Windows Update Provisioner
+      command: |
+        wget https://github.com/rgl/packer-provisioner-windows-update/releases/download/v0.7.1/packer-provisioner-windows-update-linux.tgz
+        ls -lah packer-provisioner-windows-update-linux.tgz
+        tar -xvzf packer-provisioner-windows-update-linux.tgz --no-same-owner -C /bin
+        chmod 755 /bin/packer-provisioner-windows-update
+        ls -lah /bin/packer-provisioner-windows-update
+  - run:
+      command: apk add --update ansible
+  - run:
+      command: pip3 install pywinrm
+  - run:
+      command: pip3 show pywinrm
+  - run:
+      command: packer --version
+  - run:
+      command: ansible --version
+  - run:
+      name: Build Packer Image
+      command: packer build config.json
+      no_output_timeout: 120m
