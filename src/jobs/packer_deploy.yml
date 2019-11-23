@@ -74,13 +74,13 @@ steps:
       name: Set current time
       command: |
         CURRENT_TIME=`date '+%F_%H:%M:%S'`
-        echo "{"ami_name":"" "$CIRCLE_PROJECT_REPONAME.$CIRCLE_BRANCH.$CURRENT_TIME"}"  > ~/vars.json
+        echo "{\"ami_name\":"" \"$CIRCLE_PROJECT_REPONAME.$CIRCLE_BRANCH.$CURRENT_TIME\"}"  > vars.json
   - run:
       name: Validate Packer config.json
       command: |
-        packer validate -var-file ~/vars.json config.json
+        packer validate -var-file=vars.json config.json
   - run:
       name: Build AMI
       command: |
-        packer build -var-file ~/vars.json config.json
+        packer build -var-file=vars.json config.json
       no_output_timeout: 120m
