@@ -54,7 +54,6 @@ steps:
   # Real work
   - run: terraform workspace new <<parameters.tf-workspace>>
   - run: terraform init -upgrade <<parameters.main-dir>>
-  - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>
   - when:
       condition: <<parameters.var-file>>
       steps:
