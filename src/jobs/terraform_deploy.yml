@@ -4,6 +4,12 @@ description: |
 executor: terraform
 
 parameters:
+  var-file:
+    type: string
+    default: ""
+    description: |
+      Location and name of the var-file you wish to pass into Terraform,
+      defaults to "", which means Terraform will not run expecting a var-file to be passed in.
   main-dir:
     type: string
     default: .
@@ -49,3 +55,12 @@ steps:
   - run: terraform workspace new <<parameters.tf-workspace>>
   - run: terraform init -upgrade <<parameters.main-dir>>
   - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>
+  - when:
+      condition: <<parameters.var-file>>
+      steps:
+        - run: terraform apply -input=false -auto-approve -var-file=<<parameters.var-file>> <<parameters.main-dir>> 
+  - unless:
+      condition: <<parameters.var-file>>
+      steps:
+        - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>
+ 
