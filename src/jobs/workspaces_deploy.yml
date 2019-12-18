@@ -14,3 +14,4 @@ steps:
       ls -lah
       aws workspaces register-workspace-directory --generate-cli-skeleton
       jq --help
+      
