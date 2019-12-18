@@ -1,0 +1,7 @@
+description: |
+  Docker image for aws cli
+
+resource_class: medium
+
+docker:
+  - image: circleci/aws-cli

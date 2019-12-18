@@ -62,4 +62,9 @@ steps:
       condition: <<parameters.var-file>>
       steps:
         - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>
- 
+  - run: |
+      mkdir tf_output
+      terraform output -json > tf_output/output.json
+  - persist_to_workspace:
+      root: tf_output
+      paths: output.json

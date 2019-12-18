@@ -1,0 +1,17 @@
+description: >
+  awscli deployment
+
+executor: awscli
+
+steps:
+  steps:
+    - checkout
+    - aws-cli/setup
+    - run: mkdir tf_output
+    - attach_workspace:
+        at: tf_output
+    - run: "pip install jq"
+    - run: |
+        ls -lah
+        aws workspaces register-workspace-directory --generate-cli-skeleton
+        jq --help
