@@ -4,17 +4,15 @@ description: >
 orbs:
   aws-cli: circleci/aws-cli@0.1.19
 
-jobs:
-  get-ready:
-    executor: aws-cli/default
-    steps:
-      - checkout
-      - aws-cli/setup
-      - run: mkdir tf_output
-      - attach_workspace:
-          at: tf_output
-      - run: "pip install jq"
-      - run: |
-          ls -lah
-          aws workspaces register-workspace-directory --generate-cli-skeleton
-          jq --help
+executor: aws-cli/default
+steps:
+  - checkout
+  - aws-cli/setup
+  - run: mkdir tf_output
+  - attach_workspace:
+      at: tf_output
+  - run: "pip install jq"
+  - run: |
+      ls -lah
+      aws workspaces register-workspace-directory --generate-cli-skeleton
+      jq --help
