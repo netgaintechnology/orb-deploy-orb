@@ -4,4 +4,4 @@ description: |
 resource_class: medium
 
 docker:
-  - image: circleci/aws-cli
+  - image: circleci/aws-cli@0.1.19
