@@ -1,7 +1,7 @@
 description: >
   awscli deployment
 
-executor: awscli
+executor: aws-cli
 
 steps:
   - checkout
@@ -14,4 +14,3 @@ steps:
       ls -lah
       aws workspaces register-workspace-directory --generate-cli-skeleton
       jq --help
-      
