@@ -1,11 +1,10 @@
 description: >
   AWS workspaces deployment
 
-executor: aws-cli/default
+executor: aws-cli
 
 steps:
   - checkout
-  - aws-cli/setup
   - run: mkdir tf_output
   - attach_workspace:
       at: tf_output
