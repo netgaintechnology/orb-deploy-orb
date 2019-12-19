@@ -1,7 +1,7 @@
 description: >
   AWS workspaces deployment
 
-executor: aws-cli
+executor: aws-cli/default
 
 steps:
   - checkout
