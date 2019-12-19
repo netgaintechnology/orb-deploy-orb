@@ -64,6 +64,7 @@ steps:
         - run: terraform apply -input=false -auto-approve <<parameters.main-dir>>
   - run: |
       mkdir <<parameters.main-dir>>/tf_output
+      terraform init <<parameters.main-dir>>
       terraform output -json <<parameters.main-dir>> > <<parameters.main-dir>>/tf_output/output.json
   - persist_to_workspace:
       root: <<parameters.main-dir>>/tf_output
