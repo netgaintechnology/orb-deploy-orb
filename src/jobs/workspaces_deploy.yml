@@ -5,7 +5,7 @@ executor: circleci/aws-cli@volatile
 
 steps:
   - checkout
-  - aws-cli/setup
+  - setup
   - run: mkdir tf_output
   - attach_workspace:
       at: tf_output
