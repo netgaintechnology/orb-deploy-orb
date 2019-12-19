@@ -31,7 +31,7 @@ workflows:
       # store CIRCLE_TOKEN as a project env var or Contexts resource
       # if using Contexts, add your context below
       - orb-tools/publish-dev:
-          orb-name: netgaintechnology/prebuild-orb
+          orb-name: netgaintechnology/deploy-orb
           requires:
             - orb-tools/pack
 
@@ -43,7 +43,7 @@ workflows:
             branches:
               only: master
       - orb-tools/increment:
-          orb-ref: netgaintechnology/prebuild-orb
+          orb-ref: netgaintechnology/deploy-orb
           attach-workspace: true
           requires:
             - orb-tools/pack
@@ -58,7 +58,7 @@ workflows:
 #      # be skipped.
 #      # e.g. [semver:patch] will cause a patch version to be published.
 #      - orb-tools/dev-promote-prod-from-commit-subject:
-#          orb-name: netgaintechnology/prebuild-orb
+#          orb-name: netgaintechnology/deploy-orb
 #          add-pr-comment: false
 #          publish-version-tag: true
 #          fail-if-semver-not-indicated: true
