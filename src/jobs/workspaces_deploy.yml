@@ -1,5 +1,5 @@
 description: >
-  AWS workspaces deployment
+  AWS workspaces deployment job
 
 executor: aws-cli
 
