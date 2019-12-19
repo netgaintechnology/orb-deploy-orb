@@ -1,11 +1,11 @@
 description: >
   AWS workspaces deployment
 
-executor: circleci/aws-cli@volatile
+executor: aws-cli
 
 steps:
   - checkout
-  - setup
+  - aws-cli/setup
   - run: mkdir tf_output
   - attach_workspace:
       at: tf_output

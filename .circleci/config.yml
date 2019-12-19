@@ -8,6 +8,7 @@ orbs:
   prebuild-orb: netgaintechnology/prebuild-orb@volatile
   orb-tools: circleci/orb-tools@8.27.6
   deploy-orb-alpha: netgaintechnology/deploy-orb@dev:alpha
+  aws-cli: circleci/aws-cli@volatile
 
 commands:
   pack-validate-orb:
