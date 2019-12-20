@@ -74,6 +74,7 @@ steps:
   - run: |
       cd <<parameters.main-dir>>
       mkdir tf_output
+      export TF_WORKSPACE=<<parameters.tf-workspace>>
       terraform init
       terraform output -json > tf_output/output.json
   - persist_to_workspace:
