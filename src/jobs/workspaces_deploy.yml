@@ -12,6 +12,5 @@ steps:
   - attach_workspace:
       at: tf_output
   - run: |
-      ls -lah
       aws workspaces register-workspace-directory --generate-cli-skeleton
-      jq --help
+      jq .json tf_output/output.json
