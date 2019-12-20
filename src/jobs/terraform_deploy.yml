@@ -55,6 +55,7 @@ steps:
   - run: echo 'export TF_WORKSPACE=<<parameters.tf-workspace>>' >> $BASH_ENV
   - run: |
       cd <<parameters.main-dir>>
+      export TF_WORKSPACE=<<parameters.tf-workspace>>
       terraform init -upgrade
   - when:
       condition: <<parameters.main-dir>>/<<parameters.var-file>>
