@@ -57,13 +57,13 @@ steps:
       export TF_WORKSPACE=<<parameters.tf-workspace>> >> $BASH_ENV
       terraform init -upgrade
   - when:
-      condition: <<parameters.var-file>>
+      condition: <<parameters.main-dir>>/<<parameters.var-file>>
       steps:
         - run: |
             cd <<parameters.main-dir>>
             terraform apply -input=false -auto-approve -var-file=<<parameters.var-file>> 
   - unless:
-      condition: <<parameters.var-file>>
+      condition: <<parameters.main-dir>>/<<parameters.var-file>>
       steps:
         - run: |
             cd <<parameters.main-dir>>
