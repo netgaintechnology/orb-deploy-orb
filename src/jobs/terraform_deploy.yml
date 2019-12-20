@@ -61,12 +61,14 @@ steps:
       steps:
         - run: |
             cd <<parameters.main-dir>>
+            export TF_WORKSPACE=<<parameters.tf-workspace>>
             terraform apply -input=false -auto-approve -var-file=<<parameters.var-file>> 
   - unless:
       condition: <<parameters.main-dir>>/<<parameters.var-file>>
       steps:
         - run: |
             cd <<parameters.main-dir>>
+            export TF_WORKSPACE=<<parameters.tf-workspace>>
             terraform apply -input=false -auto-approve
   - run: |
       cd <<parameters.main-dir>>
