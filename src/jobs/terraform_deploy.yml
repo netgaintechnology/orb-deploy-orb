@@ -52,9 +52,7 @@ steps:
       echo "[credential]" >> ~/.gitconfig
       echo "  helper = store" >> ~/.gitconfig
   # Real work
-  - run: 
-      name: "Set the TF_WORKSPACE Environment Variable"
-      Command: echo 'export TF_WORKSPACE=<<parameters.tf-workspace>>' >> $BASH_ENV
+  - run: echo 'export TF_WORKSPACE=<<parameters.tf-workspace>>' >> $BASH_ENV
   - run: |
       cd <<parameters.main-dir>>
       terraform init -upgrade
