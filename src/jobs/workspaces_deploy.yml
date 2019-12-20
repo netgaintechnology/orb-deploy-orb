@@ -6,7 +6,7 @@ executor: aws-cli
 steps:
   - checkout
   - run: mkdir tf_output
-  - run: "pip install jq"
+  - run: "apk add jq"
   - run: "apk add ca-certificates"
   - attach_workspace:
       at: tf_output
