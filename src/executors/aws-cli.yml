@@ -4,4 +4,4 @@ description: |
 resource_class: medium
 
 docker:
-  - image: mesosphere/aws-cli
+  - image: infrastructureascode/aws-cli
