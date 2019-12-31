@@ -12,6 +12,6 @@ steps:
   - attach_workspace:
       at: tf_output
   - run: |
-      aws workspaces register-workspace-directory --generate-cli-skeleton
-      jq . tf_output/output.json
-      
+      jq .directory_info.value.id tf_output/output.json
+      jq .directory_info.value.vpc_settings[0].subnet_ids tf_output/output.json
+      jq .workspaces_properties.value tf_output/output.json
