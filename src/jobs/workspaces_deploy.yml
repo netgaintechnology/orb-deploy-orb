@@ -12,7 +12,8 @@ steps:
   - attach_workspace:
       at: tf_output
   - run: |
+      export AWS_REGION="$(jq .aws_region.value tf_output/output.json)"
       jq .workspaces_properties.value tf_output/output.json > temp.json
       cat temp.json | jq --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) '. + {DirectoryId:$DirectoryId}' > temp.json
       jq --argjson argval "$(jq .directory_info.value.vpc_settings[0].subnet_ids tf_output/output.json)" '. += {SubnetIds:$argval}' temp.json > workspaces_properties.json
-      aws workspaces register-workspace-directory --cli-input-json $(jq . workspaces_properties.json)
+      aws workspaces register-workspace-directory --cli-input-json "$(jq . workspaces_properties.json)"
