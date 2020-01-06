@@ -18,6 +18,8 @@ steps:
       jq --argjson argval "$(jq .directory_info.value.vpc_settings[0].subnet_ids tf_output/output.json)" '. += {SubnetIds:$argval}' temp.json > workspaces_properties.json
       aws workspaces register-workspace-directory --cli-input-json "$(jq . workspaces_properties.json)"
       echo '{"Workspaces":' > workspaces.json
-      jq .workspaces.value tf_output/output.json | jq -r --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) 'map(. + {DirectoryId:$DirectoryId})' >> workspaces.json
+      aws kms describe-key --key-id "alias/Workspaces_Volume_Encryption" > key.json
+      jq .workspaces.value tf_output/output.json | jq -r --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) --arg KeyId $(jq -r .KeyMetadata.KeyId key.json) 'map(. + {DirectoryId:$DirectoryId}) | map(. + {UserVolumeEncryptionEnabled:true}) | map(. + {RootVolumeEncryptionEnabled:true}) | map(. + {VolumeEncryptionKey:$KeyId})' > workspaces.json
+      jq . workspaces.json | jq 'map(. + {UserVolumeEncryptionEnabled:true})' > workspaces.json
       echo '}' >> workspaces.json
       aws workspaces create-workspaces --cli-input-json "$(jq . workspaces.json)"
