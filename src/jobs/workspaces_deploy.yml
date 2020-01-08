@@ -28,5 +28,13 @@ steps:
       aws kms describe-key --key-id "alias/Workspaces_Volume_Encryption" > key.json
       jq .workspaces.value tf_output/output.json | jq -r --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) --arg KeyId $(jq -r .KeyMetadata.KeyId key.json) 'map(. + {DirectoryId:$DirectoryId}) | map(. + {UserVolumeEncryptionEnabled:true}) | map(. + {RootVolumeEncryptionEnabled:true}) | map(. + {VolumeEncryptionKey:$KeyId})' >> workspaces.json
       echo '}' >> workspaces.json
-      aws workspaces create-workspaces --cli-input-json "$(jq . workspaces.json)"
+      aws workspaces create-workspaces --cli-input-json "$(jq . workspaces.json)" > results.json
       else echo "No workspaces defined"; fi;
+      if [ $(jq '.FailedRequests | length' results.json) > 0 ]
+      then
+      if [ -z $(jq '.FailedRequests[] | select(.ErrorCode == "ResourceExists.WorkSpacex" | not)' results.json) ]
+      then echo "No errors here"
+      else echo "Errors:\n $(jq .FailedRequests[] results.json)"
+      exit 1
+      fi
+      fi
