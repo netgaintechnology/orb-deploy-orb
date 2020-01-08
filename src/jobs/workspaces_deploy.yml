@@ -32,7 +32,7 @@ steps:
       else echo "No workspaces defined"; fi;
       if [ $(jq '.FailedRequests | length' results.json) > 0 ]
       then
-      if [ -z $(jq '.FailedRequests[] | select(.ErrorCode == "ResourceExists.WorkSpacex" | not)' results.json) ]
+      if [ -z $(jq '.FailedRequests[] | select(.ErrorCode == "ResourceExists.WorkSpace" | not)' results.json) ]
       then echo "No errors here"
       else echo "Errors:\n $(jq .FailedRequests[] results.json)"
       exit 1
