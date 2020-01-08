@@ -14,7 +14,7 @@ steps:
   - run: |
       aws configure set region $(jq -r .aws_region.value tf_output/output.json)
       # Register the workspace directory
-      if grep --quiet '"workspaces_properties"' terraform.tfvars.json
+      if grep -q '"workspaces_properties"' aws/terraform.tfvars.json
       then
       jq .workspaces_properties.value tf_output/output.json > temp.json
       cat temp.json | jq --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) '. + {DirectoryId:$DirectoryId}' > temp.json
@@ -22,7 +22,7 @@ steps:
       aws workspaces register-workspace-directory --cli-input-json "$(jq . workspaces_properties.json)"
       else echo "No workspace directory specified"; fi;
       # Create the workspaces
-      if grep --quiet '"workspaces"' terraform.tfvars.json
+      if grep -q '"workspaces"' aws/terraform.tfvars.json
       then
       echo '{"Workspaces":' > workspaces.json
       aws kms describe-key --key-id "alias/Workspaces_Volume_Encryption" > key.json
