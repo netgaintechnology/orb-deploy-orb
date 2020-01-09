@@ -22,6 +22,9 @@ parameters:
     description: |
       Terraform workspace to use
 
+environment: 
+  TF_WORKSPACE: <<parameters.tf-workspace>>
+
 steps:
   - update_alpine_and_checkout
   # Terraform Cloud Access
@@ -52,29 +55,24 @@ steps:
       echo "[credential]" >> ~/.gitconfig
       echo "  helper = store" >> ~/.gitconfig
   # Real work
-  - run: echo 'export TF_WORKSPACE=<<parameters.tf-workspace>>' >> $BASH_ENV
   - run: |
       cd <<parameters.main-dir>>
-      export TF_WORKSPACE=<<parameters.tf-workspace>>
       terraform init -upgrade
   - when:
       condition: <<parameters.main-dir>>/<<parameters.var-file>>
       steps:
         - run: |
             cd <<parameters.main-dir>>
-            export TF_WORKSPACE=<<parameters.tf-workspace>>
             terraform apply -input=false -auto-approve -var-file=<<parameters.var-file>> 
   - unless:
       condition: <<parameters.main-dir>>/<<parameters.var-file>>
       steps:
         - run: |
             cd <<parameters.main-dir>>
-            export TF_WORKSPACE=<<parameters.tf-workspace>>
             terraform apply -input=false -auto-approve
   - run: |
       cd <<parameters.main-dir>>
       mkdir tf_output
-      export TF_WORKSPACE=<<parameters.tf-workspace>>
       terraform init
       terraform output -json > tf_output/output.json
   - persist_to_workspace:
