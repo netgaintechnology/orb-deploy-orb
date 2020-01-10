@@ -1,0 +1,7 @@
+description: |
+  Docker image for AWS CLI
+
+resource_class: medium
+
+docker:
+  - image: infrastructureascode/aws-cli
