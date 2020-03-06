@@ -20,9 +20,9 @@ steps:
       cat temp.json | jq --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) '. + {directory_id:$DirectoryId}' > temp.json
       cat temp.json | jq --arg LeasedAccount $(jq -r .workspaces.value.leased_account tf_output/output.json) '. + {leased_account:$LeasedAccount}' > temp.json
       cat temp.json | jq --arg EncryptionKey $(jq -r .encryption_key.value tf_output/output.json) '. + {encryption_key:$EncryptionKey}' > temp.json
-      export API_ENDPOINT=$(jq -r .workspaces.value.api_endpoint tf_output/output.json)
+      export API_URL=$(jq -r .workspaces.value.api_url tf_output/output.json)
       export API_KEY=$(jq -r .workspaces.value.api_key tf_output/output.json)
       # Send the request
-      response=$(curl -X POST -LI -H "Content-Type: application/json" -H "x-api-key: $API_KEY" -d @temp.json $API_ENDPOINT -o /dev/null -w '%{http_code}\n' -s)
+      curl -X POST -H "Content-Type: application/json" -H "x-api-key: $API_KEY" -d @temp.json $API_URL
       else echo "No workspaces properties specified"
       fi
