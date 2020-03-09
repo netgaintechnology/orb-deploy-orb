@@ -13,29 +13,16 @@ steps:
       at: tf_output
   - run: |
       aws configure set region $(jq -r .aws_region.value tf_output/output.json)
-      # Register the workspace directory
-      if grep -q '"workspaces_properties"' aws/terraform.tfvars.json
-      then
-      jq .workspaces_properties.value tf_output/output.json > temp.json
-      cat temp.json | jq --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) '. + {DirectoryId:$DirectoryId}' > temp.json
-      jq --argjson argval "$(jq .directory_info.value.vpc_settings[0].subnet_ids tf_output/output.json)" '. += {SubnetIds:$argval}' temp.json > workspaces_properties.json
-      aws workspaces register-workspace-directory --cli-input-json "$(jq . workspaces_properties.json)"
-      else echo "No workspace directory specified"; fi;
-      # Create the workspaces
+      # Prepare the request
       if grep -q '"workspaces"' aws/terraform.tfvars.json
       then
-      echo '{"Workspaces":' > workspaces.json
-      aws kms describe-key --key-id "alias/Workspaces_Volume_Encryption" > key.json
-      jq .workspaces.value tf_output/output.json | jq -r --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) --arg KeyId $(jq -r .KeyMetadata.KeyId key.json) 'map(. + {DirectoryId:$DirectoryId}) | map(. + {UserVolumeEncryptionEnabled:true}) | map(. + {RootVolumeEncryptionEnabled:true}) | map(. + {VolumeEncryptionKey:$KeyId})' >> workspaces.json
-      echo '}' >> workspaces.json
-      aws workspaces create-workspaces --cli-input-json "$(jq . workspaces.json)" > results.json
-      else echo "No workspaces defined"; fi;
-      if [ $(jq '.FailedRequests | length' results.json) > 0 ]
-      then
-      if [ -z $(jq '.FailedRequests[] | select(.ErrorCode == "ResourceExists.WorkSpace" | not)' results.json) ]
-      then echo "No errors here"
-      else echo "Errors:\n $(jq .FailedRequests[] results.json)"
-      exit 1
+      jq .workspaces.value tf_output/output.json > temp.json
+      cat temp.json | jq --arg DirectoryId $(jq -r .directory_info.value.id tf_output/output.json) '. + {directory_id:$DirectoryId}' > temp.json
+      cat temp.json | jq --arg LeasedAccount $(jq -r .workspaces.value.leased_account tf_output/output.json) '. + {leased_account:$LeasedAccount}' > temp.json
+      cat temp.json | jq --arg EncryptionKey $(jq -r .encryption_key.value tf_output/output.json) '. + {encryption_key:$EncryptionKey}' > temp.json
+      export API_URL=$(jq -r .workspaces.value.api_url tf_output/output.json)
+      export API_KEY=$(jq -r .workspaces.value.api_key tf_output/output.json)
+      # Send the request
+      curl -X POST -H "Content-Type: application/json" -H "x-api-key: $API_KEY" -d @temp.json $API_URL
+      else echo "No workspaces properties specified"
       fi
-      fi
-
